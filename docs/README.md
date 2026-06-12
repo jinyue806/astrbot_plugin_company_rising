@@ -213,3 +213,52 @@ wc -l ../data/skills/ontology/memory/ontology/graph.jsonl
 ## 更新日志
 
 见 [CHANGELOG.md](CHANGELOG.md)
+
+---
+
+## 文件结构
+
+```
+astrbot_plugin_company_rising/
+├── skill/                  AI GM 行为指令
+│   ├── SKILL.md
+│   ├── nano.md
+│   └── references/
+├── docs/                   文档
+│   ├── README.md
+│   ├── CHANGELOG.md
+│   ├── 更新记录.md
+│   └── best-practices.md
+├── __init__.py             插件入口
+├── main.py                 主入口（事件路由 + 指令处理）
+├── game_manager.py         游戏核心逻辑
+├── game_state.py           游戏状态管理
+├── game_prompts.py         LLM 提示词模板
+├── llm_service.py          LLM 调用服务
+├── ontology_bridge.py      知识图谱桥接
+├── finance.py              财务系统
+├── employee.py             员工系统
+├── employee_management.py  员工深度管理
+├── competitors.py          竞争对手系统
+├── events.py               事件系统
+├── random_events.py        随机事件
+├── projects.py             项目管理
+├── campus.py               校园模式
+├── campus_events.py        校园事件
+├── campus_endings.py       校园结局
+├── ceo.py                  CEO 系统
+├── candidates.py           招聘候选人
+├── recruit.py              招聘逻辑
+├── customers.py            客户系统
+├── achievements.py         成就系统
+├── endings.py              结局
+├── ending_archive.py       结局归档
+├── formatting.py           格式化工具
+├── storage.py              数据存储
+├── utils.py                工具函数
+├── constants.py            常量
+├── metadata.yaml           插件元数据
+├── _conf_schema.json       配置 schema
+├── pyproject.toml          项目配置
+└── .gitignore
+```
