@@ -3,7 +3,7 @@
 import copy
 import random
 
-from .constants import INDUSTRIES
+from ..utils.constants import INDUSTRIES
 
 # ========= 隐藏背景 =========
 

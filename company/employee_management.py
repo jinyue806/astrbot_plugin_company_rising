@@ -408,11 +408,11 @@ def buy_facility(state: dict, facility_name: str) -> dict:
     required_tier = fac["office_tier"]
 
     # 检查办公室等级
-    from .utils import get_office
+    from ..utils.utils import get_office
     office = get_office(state)
     office_tier = office.get("tier", 0) if isinstance(office, dict) else 0
     # 用 OFFICE_TYPES 获取 tier
-    from .constants import OFFICE_TYPES
+    from ..utils.constants import OFFICE_TYPES
     current_office_key = state.get("meta", {}).get("office", "A")
     current_tier = OFFICE_TYPES.get(current_office_key, {}).get("tier", 0)
 

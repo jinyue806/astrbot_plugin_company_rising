@@ -1,4 +1,4 @@
-from .constants import TALENT_TREE, CEO_LEVEL_XP
+from ..utils.constants import TALENT_TREE, CEO_LEVEL_XP
 
 
 def get_xp_for_action(action: str) -> int:

@@ -185,7 +185,7 @@ def roll_monthly_event(state: dict) -> list[dict]:
 
 def _apply_event(state: dict, event: dict) -> None:
     """将事件效果应用到 state。"""
-    from .ceo import get_talent_effects
+    from ..company.ceo import get_talent_effects
     effects = event.get("effects", {})
     talent_effects = get_talent_effects(state)
     crisis_reduction = talent_effects.get("crisis_reduction", 0)
@@ -228,7 +228,7 @@ def _apply_event(state: dict, event: dict) -> None:
         state.setdefault("ceo", {})["ap"] = max(0, state["ceo"].get("ap", 0) - effects["ap_penalty"])
 
     if "force_resign_count" in effects:
-        from .employee import fire_employee
+        from ..company.employee import fire_employee
 
         count = effects["force_resign_count"]
         active_emps = [e for e in state.get("employees", []) if e.get("status") in ("active", None)]

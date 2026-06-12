@@ -1,5 +1,5 @@
-from .utils import get_office
-from .ceo import get_talent_effects
+from ..utils.utils import get_office
+from ..company.ceo import get_talent_effects
 
 
 def calc_capacity(state: dict) -> dict:

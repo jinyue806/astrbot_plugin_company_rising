@@ -157,10 +157,10 @@ def render(template_id: str, **kwargs) -> str:
 # ============================================================
 
 # 将 original_import 所需的符号转发
-# from .game_manager import get_industry_by_name  — 保留在 game_prompts.py 中
+# from ..engine.game_manager import get_industry_by_name  — 保留在 game_prompts.py 中
 
 import random
-from .game_manager import get_industry_by_name
+from ..engine.game_manager import get_industry_by_name
 
 MONTHLY_THEMES = [
     "市场波动", "人才流动", "政策变化", "技术突破",

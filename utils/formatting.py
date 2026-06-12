@@ -1,6 +1,6 @@
 from .constants import ACHIEVEMENTS
-from .finance import compute_runway
-from .projects import ascii_progress_bar, calc_capacity
+from ..company.finance import compute_runway
+from ..engine.projects import ascii_progress_bar, calc_capacity
 from .utils import get_office, level_emoji
 
 
@@ -27,7 +27,7 @@ def format_history(state: dict, n: int = 5) -> str:
 
 def format_status(state: dict) -> str:
     if state.get("phase") == "campus":
-        from .campus import format_campus_status
+        from ..campus.campus import format_campus_status
         return format_campus_status(state)
 
     s = state
@@ -110,7 +110,7 @@ def format_panel_project(state: dict) -> str:
 
 def format_panel(state: dict, module: str = "") -> str:
     if state.get("phase") == "campus":
-        from .campus import format_campus_status
+        from ..campus.campus import format_campus_status
         return format_campus_status(state)
 
     if module == "财务":
@@ -121,7 +121,7 @@ def format_panel(state: dict, module: str = "") -> str:
         return format_panel_project(state)
     if module == "竞争对手":
         try:
-            from .competitors import format_competitors
+            from ..engine.competitors import format_competitors
             return format_competitors(state)
         except ImportError:
             return "🆚 【竞争对手】\n竞争对手系统未启用。"

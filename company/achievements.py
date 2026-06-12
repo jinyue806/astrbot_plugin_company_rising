@@ -1,5 +1,5 @@
-from .constants import ACHIEVEMENTS
-from .utils import parse_time_to_month_idx
+from ..utils.constants import ACHIEVEMENTS
+from ..utils.utils import parse_time_to_month_idx
 
 
 def check_achievements(state: dict) -> list[str]:

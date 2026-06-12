@@ -5,8 +5,8 @@ from astrbot.api import AstrBotConfig, logger
 from astrbot.api.event import AstrMessageEvent, filter
 from astrbot.api.star import Context, Star, register
 
-from .candidates import NORMAL_CANDIDATES
-from .game_manager import (
+from .company.candidates import NORMAL_CANDIDATES
+from .engine.game_manager import (
     ACHIEVEMENTS,
     CEO_TRAITS,
     INDUSTRIES,
@@ -33,7 +33,7 @@ from .game_manager import (
     get_available_talents,
     format_ceo_panel,
 )
-from .employee import (
+from .company.employee import (
     format_all_employees,
     format_employee,
     fire_employee,
@@ -46,7 +46,7 @@ from .employee import (
     SKILLS_BY_ROLE,
     SKILL_NAMES_CN,
 )
-from .prompt_templates import (
+from .llm.prompt_templates import (
     DEV_TONES,
     MONTHLY_THEMES,
     SYSTEM_PROMPT_CORE,
@@ -58,9 +58,9 @@ from .prompt_templates import (
     build_office_prompt,
     build_recruit_prompt,
 )
-from .game_state import GameState
-from .ontology_bridge import OntologyBridge, _run_onto, cmd_history
-from .llm_service import LLMService, LLMRequest
+from .engine.game_state import GameState
+from .llm.ontology_bridge import OntologyBridge, _run_onto, cmd_history
+from .llm.llm_service import LLMService, LLMRequest
 
 
 class _RoutedEvent:
@@ -220,12 +220,12 @@ class CompanyRisingPlugin(Star):
         )
 
     async def _finish_campus_if_ended(self, gs: GameState, event: AstrMessageEvent) -> str | None:
-        from .campus import check_win_lose
+        from .campus.campus import check_win_lose
         result = check_win_lose(gs.state)
         if not result:
             return None
 
-        from .campus_endings import FAILURE_ENDINGS, WIN_ENDINGS, format_ending, get_ending
+        from .campus.campus_endings import FAILURE_ENDINGS, WIN_ENDINGS, format_ending, get_ending
         ending_id = result.get("ending")
         pool = WIN_ENDINGS if result.get("type") == "win" else FAILURE_ENDINGS
         if ending_id in pool:
@@ -235,7 +235,7 @@ class CompanyRisingPlugin(Star):
             ending["type"] = result.get("type", ending.get("type", "lose"))
 
         message = format_ending(ending)
-        from .ending_archive import save_ending
+        from .utils.ending_archive import save_ending
         save_ending(gs.state, event.get_sender_id(), message)
         await gs.delete()
         return message
@@ -472,7 +472,7 @@ class CompanyRisingPlugin(Star):
         result = advance_month(gs.state)
         await gs.save()
         if result.get("game_over"):
-            from .ending_archive import save_ending
+            from .utils.ending_archive import save_ending
             save_ending(gs.state, event.get_sender_id(), result["msg"])
             yield event.plain_result(result["msg"])
             await gs.delete()
@@ -564,7 +564,7 @@ class CompanyRisingPlugin(Star):
                 yield event.plain_result(f"📋 {icon} {kr.get('emp', '?')} KPI {status}")
             # 加薪要求通知
             try:
-                from .employee_management import check_salary_demands
+                from .company.employee_management import check_salary_demands
                 demands = check_salary_demands(gs.state)
                 for d in demands:
                     yield event.plain_result(
@@ -760,7 +760,7 @@ class CompanyRisingPlugin(Star):
             yield event.plain_result("⚠️ 先 /启动游戏 创建公司。")
             event.stop_event(); return
         if gs.state.get("phase") == "campus":
-            from .campus import format_campus_status
+            from .campus.campus import format_campus_status
             yield event.plain_result("🔍 【校园代码真相】\n" + format_campus_status(gs.state))
             event.stop_event(); return
         s = gs.state
@@ -907,7 +907,7 @@ class CompanyRisingPlugin(Star):
             event.stop_event(); return
 
         # 默认：显示面板
-        from .llm_service import format_scene_panel
+        from .llm.llm_service import format_scene_panel
         yield event.plain_result(format_scene_panel(scene_config))
         event.stop_event()
 
@@ -1328,7 +1328,7 @@ class CompanyRisingPlugin(Star):
 
     async def endings_list_cmd(self, event: AstrMessageEvent):
         """List all archived endings for current user."""
-        from .ending_archive import list_endings, format_endings_list
+        from .utils.ending_archive import list_endings, format_endings_list
         uid = event.get_sender_id()
         endings = list_endings(uid)
         yield event.plain_result(format_endings_list(endings))
@@ -1336,7 +1336,7 @@ class CompanyRisingPlugin(Star):
 
     async def review_ending_cmd(self, event: AstrMessageEvent):
         """Review a specific archived ending: /\u56de\u987e [index]"""
-        from .ending_archive import list_endings, get_ending, format_ending_detail, format_endings_list
+        from .utils.ending_archive import list_endings, get_ending, format_ending_detail, format_endings_list
         uid = event.get_sender_id()
         rest = event.message_str.strip()[len("/回顾"):].strip()
         if not rest:
@@ -1371,12 +1371,12 @@ class CompanyRisingPlugin(Star):
             yield event.plain_result("⚠️ 你已经有一个进行中的游戏。输入 /公司 重置 清档后重来。")
             event.stop_event(); return
 
-        from .game_state import CAMPUS_DEFAULT
+        from .engine.game_state import CAMPUS_DEFAULT
         import copy
         gs.state = copy.deepcopy(CAMPUS_DEFAULT)
         self._sync_runtime_config(gs.state, reset_ap=True)
 
-        from .campus import roll_background
+        from .campus.campus import roll_background
         bg = roll_background()
         gs.state["campus"]["background"] = bg
         gs.state["meta"]["background"] = bg
@@ -1402,7 +1402,7 @@ class CompanyRisingPlugin(Star):
             yield event.plain_result("⚠️ 你已经进入公司期了。使用 /公司 状态 查看公司。")
             event.stop_event(); return
 
-        from .campus import check_promotion_eligibility, campus_to_company
+        from .campus.campus import check_promotion_eligibility, campus_to_company
         result = check_promotion_eligibility(gs.state)
         if not result["ok"]:
             yield event.plain_result("❌ 晋升条件不足：\n" + "\n".join(f"  · {m}" for m in result["missing"]))
@@ -1416,7 +1416,7 @@ class CompanyRisingPlugin(Star):
         company_name = parts[1]
         industry_name = parts[2]
 
-        from .constants import INDUSTRIES
+        from .utils.constants import INDUSTRIES
         industry = None
         for k, v in INDUSTRIES.items():
             if industry_name in v.get("name", "") or industry_name == k:
@@ -1455,7 +1455,7 @@ class CompanyRisingPlugin(Star):
             yield event.plain_result("⚠️ 你已经进入公司期了。使用 /公司 状态 查看公司。")
             event.stop_event(); return
 
-        from .campus import do_part_time
+        from .campus.campus import do_part_time
         parts = event.message_str.strip().split()
         job_type = parts[1] if len(parts) >= 2 else "freelance"
 
@@ -1485,7 +1485,7 @@ class CompanyRisingPlugin(Star):
             yield event.plain_result("⚠️ 你已经进入公司期了。使用 /公司 状态 查看公司。")
             event.stop_event(); return
 
-        from .campus import do_product
+        from .campus.campus import do_product
         parts = event.message_str.strip().split(maxsplit=1)
         product_name = parts[1] if len(parts) >= 2 else "未命名产品"
 
@@ -1519,7 +1519,7 @@ class CompanyRisingPlugin(Star):
             yield event.plain_result("⚠️ 你已经进入公司期了。使用 /公司 状态 查看公司。")
             event.stop_event(); return
 
-        from .campus import do_competition
+        from .campus.campus import do_competition
         result = do_competition(gs.state)
         campus = gs.state.get("campus", {})
         campus["months_played"] = campus.get("months_played", 0) + 1
@@ -1551,7 +1551,7 @@ class CompanyRisingPlugin(Star):
             yield event.plain_result("⚠️ 你已经进入公司期了。使用 /公司 状态 查看公司。")
             event.stop_event(); return
 
-        from .campus import do_network
+        from .campus.campus import do_network
         result = do_network(gs.state)
         campus = gs.state.get("campus", {})
         campus["months_played"] = campus.get("months_played", 0) + 1
@@ -1576,7 +1576,7 @@ class CompanyRisingPlugin(Star):
             yield event.plain_result("⚠️ 你已经进入公司期了。使用 /公司 状态 查看公司。")
             event.stop_event(); return
 
-        from .campus import find_partner
+        from .campus.campus import find_partner
         result = find_partner(gs.state)
         campus = gs.state.get("campus", {})
         campus["months_played"] = campus.get("months_played", 0) + 1
@@ -1598,7 +1598,7 @@ class CompanyRisingPlugin(Star):
             yield event.plain_result("⚠️ 你已经进入公司期了。使用 /公司 状态 查看公司。")
             event.stop_event(); return
 
-        from .campus_events import get_available_events, apply_event_choice
+        from .campus.campus_events import get_available_events, apply_event_choice
         events = get_available_events(gs.state)
         dating_events = [e for e in events if e["id"].startswith("mom_") or e["id"] in ("investor_date", "rich_date", "pushy_parents")]
         if not dating_events:
@@ -1638,7 +1638,7 @@ class CompanyRisingPlugin(Star):
             yield event.plain_result("⚠️ 选项号必须是数字。")
             event.stop_event(); return
 
-        from .campus_events import apply_event_choice
+        from .campus.campus_events import apply_event_choice
         result = apply_event_choice(gs.state, event_id, choice_idx)
 
         await gs.save()
@@ -1731,7 +1731,7 @@ class CompanyRisingPlugin(Star):
             )
             event.stop_event(); return
 
-        from .employee_management import set_kpi, cancel_kpi
+        from .company.employee_management import set_kpi, cancel_kpi
 
         if parts[1] == "取消":
             if len(parts) < 3:
@@ -1780,7 +1780,7 @@ class CompanyRisingPlugin(Star):
         emp_name = parts[1]
         action_str = parts[2]
 
-        from .employee_management import give_raise, handle_salary_demand, _find_employee
+        from .company.employee_management import give_raise, handle_salary_demand, _find_employee
         emp = _find_employee(gs.state, emp_name)
         if not emp:
             yield event.plain_result(f"⚠️ 没找到员工「{emp_name}」。")
@@ -1853,7 +1853,7 @@ class CompanyRisingPlugin(Star):
             event.stop_event(); return
 
         parts = event.message_str.strip().split()
-        from .employee_management import list_facilities, buy_facility, FACILITIES
+        from .company.employee_management import list_facilities, buy_facility, FACILITIES
 
         if len(parts) < 3 or parts[1] not in ("购买", "买", "建设"):
             # 显示列表

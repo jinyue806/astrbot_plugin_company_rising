@@ -87,7 +87,7 @@ def init_competitors(state: dict) -> list[dict]:
 
 def _get_competitor_talent_effects(comp: dict) -> dict:
     """获取对手 CEO 已解锁天赋的效果。"""
-    from .constants import TALENT_TREE
+    from ..utils.constants import TALENT_TREE
     effects = {}
     trait = comp["ceo"]["trait"]
     trait_info = CEO_TRAITS.get(trait, {})
@@ -115,7 +115,7 @@ def advance_competitors(state: dict) -> list[dict]:
     player_rep = state.get("finance", {}).get("reputation", 0)
     talent_effects = {}
     try:
-        from .ceo import get_talent_effects
+        from ..company.ceo import get_talent_effects
         talent_effects = get_talent_effects(state)
     except ImportError:
         pass
@@ -169,7 +169,7 @@ def advance_competitors(state: dict) -> list[dict]:
 
 def _try_level_up(comp: dict, mod: dict) -> None:
     """尝试给对手 CEO 升级。"""
-    from .constants import CEO_LEVEL_XP
+    from ..utils.constants import CEO_LEVEL_XP
     max_level = mod.get("max_level", 7)
     level = comp["ceo"].get("level", 1)
     xp = comp["ceo"].get("xp", 0)

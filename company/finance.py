@@ -1,6 +1,6 @@
 from .achievements import unlock_achievements
-from .constants import OFFICE_TYPES
-from .utils import get_industry_by_name, get_office_rent, parse_time_to_month_idx
+from ..utils.constants import OFFICE_TYPES
+from ..utils.utils import get_industry_by_name, get_office_rent, parse_time_to_month_idx
 from .ceo import get_talent_effects
 
 

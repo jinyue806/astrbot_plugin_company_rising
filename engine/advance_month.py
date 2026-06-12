@@ -1,12 +1,12 @@
 import random
 
-from .achievements import unlock_achievements
-from .customers import update_customers
-from .endings import GAME_OVER_ENDINGS
+from ..company.achievements import unlock_achievements
+from ..company.customers import update_customers
+from ..utils.endings import GAME_OVER_ENDINGS
 from .projects import calc_capacity
-from .utils import get_office_rent, increment_month
-from .ceo import gain_xp, get_talent_effects
-from .employee import decay_loyalty, grow_skills, check_auto_resignations
+from ..utils.utils import get_office_rent, increment_month
+from ..company.ceo import gain_xp, get_talent_effects
+from ..company.employee import decay_loyalty, grow_skills, check_auto_resignations
 
 
 def advance_month(state: dict) -> dict:
@@ -127,7 +127,7 @@ def advance_month(state: dict) -> dict:
             pass
     # 员工管理系统 (Task 5)
     try:
-        from .employee_management import roll_employee_activities, evaluate_kpis, apply_facilities
+        from ..company.employee_management import roll_employee_activities, evaluate_kpis, apply_facilities
         employee_activities = roll_employee_activities(state)
         if meta.get("_kpi_enabled", True):
             kpi_results = evaluate_kpis(state)

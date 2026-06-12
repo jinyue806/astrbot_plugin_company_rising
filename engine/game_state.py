@@ -2,9 +2,9 @@ import json
 import logging
 
 
-from .ontology_bridge import OntologyBridge
-from .constants import ACHIEVEMENTS
-from .storage import get_plugin_data_dir
+from ..llm.ontology_bridge import OntologyBridge
+from ..utils.constants import ACHIEVEMENTS
+from ..utils.storage import get_plugin_data_dir
 
 logger = logging.getLogger(__name__)
 
