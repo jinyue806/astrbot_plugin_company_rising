@@ -1,0 +1,22 @@
+name: astrbot_plugin_company_rising
+display_name: 公司崛起
+short_desc: 文字商业模拟游戏，在 QQ 群里经营公司、融资上市
+desc: 《公司崛起》文字商业模拟游戏 - 在 IM 中经营你的公司。dbs 5 维商业逻辑 + ontology 知识图谱。
+help: 输入 /启动游戏 开始新游戏。输入 /startgame 开始校园模式。输入 /帮助 查看全部指令。完整文档见 README.md。
+author: jinyue806
+repo: https://github.com/jinyue806/astrbot_plugin_company_rising
+version: v1.8.0
+changelog: CHANGELOG.md
+astrbot_version: ">=4.16,<5"
+tags:
+  - 游戏
+  - 模拟经营
+  - 商业模拟
+platforms:
+  - aiocqhttp
+  - qq_official
+  - qq_official_webhook
+  - telegram
+  - discord
+  - wecom
+  - wecom_ai_bot
