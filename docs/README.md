@@ -229,34 +229,41 @@ astrbot_plugin_company_rising/
 │   ├── CHANGELOG.md
 │   ├── 更新记录.md
 │   └── best-practices.md
-├── __init__.py             插件入口
+├── engine/                 游戏核心
+│   ├── game_manager.py     核心逻辑 + 模块路由
+│   ├── game_state.py       游戏状态读写
+│   ├── game_prompts.py     LLM 提示词
+│   ├── advance_month.py    时间推进
+│   ├── events.py           事件检测
+│   ├── projects.py         项目管理
+│   ├── competitors.py      竞争对手
+│   └── random_events.py    随机事件
+├── company/                公司经营
+│   ├── ceo.py              CEO 系统 / 天赋
+│   ├── finance.py          财务 / 融资 / IPO
+│   ├── employee.py         员工基类
+│   ├── employee_management.py  员工深度管理
+│   ├── recruit.py          招聘
+│   ├── customers.py        客户
+│   ├── candidates.py       候选人生成
+│   └── achievements.py     成就
+├── campus/                 校园模式
+│   ├── campus.py           主逻辑
+│   ├── campus_events.py    事件
+│   └── campus_endings.py   结局
+├── llm/                    AI 服务
+│   ├── llm_service.py      LLM 调用封装
+│   ├── prompt_templates.py 提示词模板
+│   └── ontology_bridge.py  知识图谱桥接
+├── utils/                  工具库
+│   ├── formatting.py       格式化展示
+│   ├── storage.py          文件存储
+│   ├── utils.py            通用工具函数
+│   ├── constants.py        常量
+│   ├── endings.py          游戏结束结局
+│   └── ending_archive.py   结局归档
+├── __init__.py             插件入口 + 自动部署
 ├── main.py                 主入口（事件路由 + 指令处理）
-├── game_manager.py         游戏核心逻辑
-├── game_state.py           游戏状态管理
-├── game_prompts.py         LLM 提示词模板
-├── llm_service.py          LLM 调用服务
-├── ontology_bridge.py      知识图谱桥接
-├── finance.py              财务系统
-├── employee.py             员工系统
-├── employee_management.py  员工深度管理
-├── competitors.py          竞争对手系统
-├── events.py               事件系统
-├── random_events.py        随机事件
-├── projects.py             项目管理
-├── campus.py               校园模式
-├── campus_events.py        校园事件
-├── campus_endings.py       校园结局
-├── ceo.py                  CEO 系统
-├── candidates.py           招聘候选人
-├── recruit.py              招聘逻辑
-├── customers.py            客户系统
-├── achievements.py         成就系统
-├── endings.py              结局
-├── ending_archive.py       结局归档
-├── formatting.py           格式化工具
-├── storage.py              数据存储
-├── utils.py                工具函数
-├── constants.py            常量
 ├── metadata.yaml           插件元数据
 ├── _conf_schema.json       配置 schema
 ├── pyproject.toml          项目配置
